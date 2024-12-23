@@ -1,0 +1,27 @@
+name: Deploy WordPress
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v2
+      
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+
+      - name: Testar Plugins/Temas
+        run: |
+          composer install
+          phpunit --testsuite=all
+      
+      - name: Deploy para o Servidor
+        run: |
+          rsync -avz . user@seuservidor:/var/www/html/wp-content/
